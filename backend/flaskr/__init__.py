@@ -38,8 +38,8 @@ def create_app(test_config=None):
         formated_categories = [category.type.format() for category in categories]
         print(formated_categories)
         return jsonify({
-          "categories" : formated_categories,
-          "success" : True
+          "success" : True,
+          "categories" : formated_categories
         })
       except: 
         abort(422)  
@@ -69,11 +69,11 @@ def create_app(test_config=None):
       formated_categories = [category.type.format() for category in categories]
       current_category = None
       return jsonify({
+        "success" : True,
         "questions" : formated_questions[start:end],
         "total_questions": len(formated_questions),
         "categories": formated_categories,
-        "current_category": current_category,
-        "success" : True
+        "current_category": current_category        
       })
     except:
       abort(422)
@@ -90,8 +90,8 @@ def create_app(test_config=None):
       query = Question.query.get(question_id)
       query.delete()
       return jsonify({
-        "deleted" : question_id,
         "success" : True,
+        "deleted" : question_id,
         "total_questions": len(Question.query.all())
       })
     except:
@@ -119,12 +119,12 @@ def create_app(test_config=None):
       question.insert()
 
       return jsonify({
-        "created": question.id,
         "success" : True,
+        "created": question.id,
         "total_questions": len(Question.query.all())
       })
     except:
-      abort(404)
+      abort(422)
 
   '''
   @TODO: 
@@ -136,7 +136,21 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
-
+  @app.route('/questions/search',methods=['POST'])
+  def search_question():
+    try: 
+      searchTerm = request.get_json()['searchTerm']
+      questions = Question.query.filter(Question.question.ilike(f'%{searchTerm}%')).order_by(Question.id).all()
+      formated_questions = [question.format() for question in questions]
+      print(formated_questions)
+      return jsonify({
+        "success" : True,
+        "questions" : formated_questions,
+        "total_questions" : len(formated_questions),
+        "current_category" : None
+      })
+    except:
+      abort(422)
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
