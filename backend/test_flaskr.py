@@ -53,34 +53,87 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['categories']))
         self.assertEqual(data['current_category'],None)
 
-    def test_404_sent_requesting_beyond_valid_pages(self):
+    def test_422_sent_requesting_beyond_valid_pages(self):
         response = self.client().get('/questions?page=500')
         data = json.loads(response.data)
 
-        self.assertEqual(response.status_code,404)
+        self.assertEqual(response.status_code,422)
         self.assertEqual(data['success'],False)
         self.assertTrue(data['message'],"Not Found")
 
     def test_delete_question(self):
-        response = self.client().delete('/questions/2')
+        response = self.client().delete('/questions/1')
         data = json.loads(response.data)
 
-        question = Question.query.get(2)
+        question = Question.query.get(1)
 
         self.assertEqual(response.status_code,200)
         self.assertEqual(data['success'],True)
-        self.assertEqual(data['deleted'],2)
+        self.assertEqual(data['deleted'],1)
         self.assertTrue(data['total_questions'])
         self.assertEqual(question, None)
 
     def test_404_if_question_does_not_exist(self):
-        response = self.client().get('/questions/1000')
+        response = self.client().delete('/questions/1000')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code,404)
         self.assertEqual(data['success'],False)
         self.assertTrue(data['message'],"Not Found")
 
+    def test_post_question(self):
+        response = self.client().post('/questions', json={'question': ' Which England footballer was famously never given a yellow card?', 'answer' : 'Gary Lineker', 'difficulty' : 3, 'category' : 'sport'})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(data['category'])
+        self.assertTrue(data['total_questions'])
+
+    def test_400_if_post_question_bad_request(self):
+        response = self.client().post('/questions/20', json={'question': ' Which England footballer was famously never given a yellow card?', 'answer' : 'Gary Lineker', 'difficulty' : 3, 'category' : 'sport'})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,400)
+        self.assertEqual(data['success'],False)
+        self.assertTrue(data['message'],"Bad Request")
+
+    def test_search_question(self):
+        response = self.client().post('/questions/search', json={'searchTerm': 'which'})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertEqual(data['current_category'],None)
+
+    def test_400_if_search_question_bad_request(self):
+        response = self.client().post('/questions/search', json={'search': 'which'})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,400)
+        self.assertEqual(data['success'],False)
+        self.assertTrue(data['message'],"Bad Request")   
+
+    def test_get_questions_by_category(self):
+        response = self.client().get('/categories/1/questions')
+        data = json.loads(response.data)
+        category = Category.query.get(1+1)
+
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertEqual(data['current_category'],category.type)
+
+    def test_404_sent_requesting_beyond_valid_pages(self):
+        response = self.client().get('/categories/1000/questions')
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,404)
+        self.assertEqual(data['success'],False)
+        self.assertTrue(data['message'],"Not Found")     
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()

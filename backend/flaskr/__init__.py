@@ -3,7 +3,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-
+from sqlalchemy import func
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
@@ -71,7 +71,7 @@ def create_app(test_config=None):
       selected_questions = questions[start:end]
       
       if len(selected_questions)==0:
-        abort(404)
+        abort(422)
         
       return jsonify({
         "success" : True,
@@ -166,8 +166,9 @@ def create_app(test_config=None):
   @app.route('/categories/<int:category_id>/questions',methods=['GET'])
   def get_question_by_category(category_id):
     try: 
-      category = Category.query.get(category_id)
-      questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
+      id = category_id + 1
+      category = Category.query.get(id)
+      questions = Question.query.filter_by(category=id).order_by(Question.id).all()
       formated_questions = [question.format() for question in questions]
       return jsonify({
         "success" : True,
@@ -190,19 +191,34 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
   @app.route('/quizzes',methods=['POST'])
-  def get_question_quizzes(category_id):
-    try: 
-      category = Category.query.get(category_id)
-      questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
+  def get_question_quizzes():
+    try:
+      body = request.get_json()
+      
+      previous_questions = body['previous_questions']
+      quiz_category = body['quiz_category']
+      id = quiz_category + 1
+      category = Category.query.get(id)
+      questions = Question.query.filter_by(category=id).order_by(Question.id).all()
       formated_questions = [question.format() for question in questions]
-      return jsonify({
+      # random_question = random.choice(formated_questions)
+      # check_random_question = random_question.id.notin_(previous_questions)
+
+      if check_random_question == False:
+        return jsonify({
         "success" : True,
-        "questions" : formated_questions,
-        "total_questions" : len(formated_questions),
-        "current_category" : category.type
-      })
+        "total_questions": len(formated_questions)
+      }) 
+
+      else:
+
+        return jsonify({
+          "success" : True,
+          # "question": random_question.id,
+          "total_questions": len(formated_questions)
+        })
     except:
-      abort(422)
+      abort(400)
 
   '''
   @TODO: 
