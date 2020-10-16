@@ -197,26 +197,19 @@ def create_app(test_config=None):
       
       previous_questions = body['previous_questions']
       quiz_category = body['quiz_category']
-      id = quiz_category + 1
-      category = Category.query.get(id)
-      questions = Question.query.filter_by(category=id).order_by(Question.id).all()
-      formated_questions = [question.format() for question in questions]
-      # random_question = random.choice(formated_questions)
-      # check_random_question = random_question.id.notin_(previous_questions)
-
-      if check_random_question == False:
+      questions = Question.query.filter_by(category=quiz_category['id']).filter(Question.id.notin_((previous_questions))).all()
+      
+      if len(questions)==0:
         return jsonify({
-        "success" : True,
-        "total_questions": len(formated_questions)
-      }) 
-
-      else:
-
+          "success" : True
+        }) 
+      else:  
+        random_question = random.choice(questions).format()
         return jsonify({
           "success" : True,
-          # "question": random_question.id,
-          "total_questions": len(formated_questions)
-        })
+          "question": random_question
+        }) 
+
     except:
       abort(400)
 
