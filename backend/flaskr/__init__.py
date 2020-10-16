@@ -142,7 +142,6 @@ def create_app(test_config=None):
       searchTerm = request.get_json()['searchTerm']
       questions = Question.query.filter(Question.question.ilike(f'%{searchTerm}%')).order_by(Question.id).all()
       formated_questions = [question.format() for question in questions]
-      print(formated_questions)
       return jsonify({
         "success" : True,
         "questions" : formated_questions,
@@ -150,7 +149,7 @@ def create_app(test_config=None):
         "current_category" : None
       })
     except:
-      abort(422)
+      abort(404)
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
@@ -159,7 +158,20 @@ def create_app(test_config=None):
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
-
+  @app.route('/categories/<int:category_id>/questions',methods=['GET'])
+  def get_question_by_category(category_id):
+    try: 
+      category = Category.query.get(category_id)
+      questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
+      formated_questions = [question.format() for question in questions]
+      return jsonify({
+        "success" : True,
+        "questions" : formated_questions,
+        "total_questions" : len(formated_questions),
+        "current_category" : category.type
+      })
+    except:
+      abort(404)
 
   '''
   @TODO: 
