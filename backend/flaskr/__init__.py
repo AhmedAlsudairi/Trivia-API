@@ -184,13 +184,42 @@ def create_app(test_config=None):
   one question at a time is displayed, the user is allowed to answer
   and shown whether they were correct or not. 
   '''
+  @app.route('/quizzes',methods=['POST'])
+  def get_question_by_category(category_id):
+    try: 
+      category = Category.query.get(category_id)
+      questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
+      formated_questions = [question.format() for question in questions]
+      return jsonify({
+        "success" : True,
+        "questions" : formated_questions,
+        "total_questions" : len(formated_questions),
+        "current_category" : category.type
+      })
+    except:
+      abort(404)
 
   '''
   @TODO: 
   Create error handlers for all expected errors 
   including 404 and 422. 
   '''
-  
+  @app.errorhandler(422)
+  def unprocessable_entity(error):
+    return jsonify({
+      "success" : False
+      "status_code" : 422,
+      "message" : "Unprocessable Entity"
+    }), 422
+
+  @app.errorhandler(404)
+  def not_found(error):
+    return jsonify({
+      "success" : False
+      "status_code" : 404,
+      "message" : "Not Found"
+    }), 404  
+    
   return app
 
     
