@@ -68,6 +68,11 @@ def create_app(test_config=None):
       formated_questions = [question.format() for question in questions]
       formated_categories = [category.type.format() for category in categories]
       current_category = None
+      selected_questions = questions[start:end]
+      
+      if len(selected_questions)==0:
+        abort(404)
+        
       return jsonify({
         "success" : True,
         "questions" : formated_questions[start:end],
@@ -124,7 +129,7 @@ def create_app(test_config=None):
         "total_questions": len(Question.query.all())
       })
     except:
-      abort(422)
+      abort(400)
 
   '''
   @TODO: 
@@ -149,7 +154,7 @@ def create_app(test_config=None):
         "current_category" : None
       })
     except:
-      abort(404)
+      abort(400)
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
@@ -185,7 +190,7 @@ def create_app(test_config=None):
   and shown whether they were correct or not. 
   '''
   @app.route('/quizzes',methods=['POST'])
-  def get_question_by_category(category_id):
+  def get_question_quizzes(category_id):
     try: 
       category = Category.query.get(category_id)
       questions = Question.query.filter_by(category=category_id).order_by(Question.id).all()
@@ -197,7 +202,7 @@ def create_app(test_config=None):
         "current_category" : category.type
       })
     except:
-      abort(404)
+      abort(422)
 
   '''
   @TODO: 
@@ -207,7 +212,7 @@ def create_app(test_config=None):
   @app.errorhandler(422)
   def unprocessable_entity(error):
     return jsonify({
-      "success" : False
+      "success" : False,
       "status_code" : 422,
       "message" : "Unprocessable Entity"
     }), 422
@@ -215,11 +220,20 @@ def create_app(test_config=None):
   @app.errorhandler(404)
   def not_found(error):
     return jsonify({
-      "success" : False
+      "success" : False,
       "status_code" : 404,
       "message" : "Not Found"
     }), 404  
-    
+
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      "success" : False,
+      "status_code" : 400,
+      "message" : "Bad Request"
+    }), 400  
+
+
   return app
 
     
