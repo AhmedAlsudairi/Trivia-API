@@ -34,7 +34,7 @@ def create_app(test_config=None):
   @app.route('/categories',methods=['GET'])
   def get_categories():
       try:
-        categories = Category.query.all()
+        categories = Category.query.order_by(Category.id).all()
         formated_categories = [category.type.format() for category in categories]
         print(formated_categories)
         return jsonify({
@@ -63,8 +63,8 @@ def create_app(test_config=None):
       page = request.args.get('page', 1, type=int)
       start = (page-1)*10
       end = start + 10
-      questions = Question.query.all()
-      categories = Category.query.all()
+      questions = Question.query.order_by(Question.id).all()
+      categories = Category.query.order_by(Category.id).all()
       formated_questions = [question.format() for question in questions]
       formated_categories = [category.type.format() for category in categories]
       current_category = None
@@ -87,12 +87,12 @@ def create_app(test_config=None):
   @app.route('/questions/<int:question_id>',methods=['DELETE'])
   def delete_question(question_id):
     try:
-      print(question_id)
       query = Question.query.get(question_id)
       query.delete()
       return jsonify({
-        "deleted_question_id" : question_id
-        "success" : True
+        "deleted" : question_id,
+        "success" : True,
+        "total_questions": len(Question.query.all())
       })
     except:
       abort(404)
@@ -101,11 +101,30 @@ def create_app(test_config=None):
   Create an endpoint to POST a new question, 
   which will require the question and answer text, 
   category, and difficulty score.
-
+  
   TEST: When you submit a question on the "Add" tab, 
   the form will clear and the question will appear at the end of the last page
   of the questions list in the "List" tab.  
   '''
+  @app.route('/questions',methods=['POST'])
+  def post_question():
+    try:
+      body = request.get_json()
+      
+      question_text = body['question']
+      answer = body['answer']
+      difficulty = body['difficulty']
+      category = body['category']
+      question = Question(question=question_text, answer=answer, category=category, difficulty=difficulty)
+      question.insert()
+
+      return jsonify({
+        "created": question.id,
+        "success" : True,
+        "total_questions": len(Question.query.all())
+      })
+    except:
+      abort(404)
 
   '''
   @TODO: 
