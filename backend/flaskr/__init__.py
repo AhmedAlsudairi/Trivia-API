@@ -61,8 +61,8 @@ def create_app(test_config=None):
   def get_questions():
     try:
       page = request.args.get('page', 1, type=int)
-      start = (page-1)*10
-      end = start + 10
+      start = (page-1)*QUESTIONS_PER_PAGE
+      end = start + QUESTIONS_PER_PAGE
       questions = Question.query.order_by(Question.id).all()
       categories = Category.query.order_by(Category.id).all()
       formated_questions = [question.format() for question in questions]
@@ -166,7 +166,7 @@ def create_app(test_config=None):
   @app.route('/categories/<int:category_id>/questions',methods=['GET'])
   def get_question_by_category(category_id):
     try: 
-      id = category_id + 1
+      id = category_id
       category = Category.query.get(id)
       questions = Question.query.filter_by(category=id).order_by(Question.id).all()
       formated_questions = [question.format() for question in questions]
