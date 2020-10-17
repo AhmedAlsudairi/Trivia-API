@@ -27,23 +27,23 @@ This API is hosted in localhost http://127.0.0.1:5000/ .
 ### Error
 
 1. Code: 422, Message: Unprocessable Entity,
-Response: {
+Response: ```{
       "success" : False,
       "status_code" : 422,
       "message" : "Unprocessable Entity"
-    }
+    }```
 2. Code: 404, Message: Not Found,
-Response: {
+Response: ```{
       "success" : False,
       "status_code" : 404,
       "message" : "Not Found"
-    }
+    }```
 3. Code: 400, Message: Bad Request,
-Response: {
+Response: ```{
       "success" : False,
       "status_code" : 400,
       "message" : "Bad Request"
-    }  
+    }  ```
     
 ### Resourse endpoints    
 
@@ -209,32 +209,8 @@ Response: ```{
 6. Method: GET, URI: '/categories/<int:category_id>/questions'  
 Description: This endpoint to get questions based on category.
 Parameters: category_id
-Request: ```curl -X GET http://127.0.0.1:5000/categories/4/questions```
+Request: ```curl -X GET http://127.0.0.1:5000/categories/2/questions```
 Response: ```{
-  "current_category": "History",
-  "questions": [
-    {
-      "answer": "Scarab",
-      "category": 4,
-      "difficulty": 4,
-      "id": 23,
-      "question": "Which dung beetle was worshipped by the ancient Egyptians?"
-    }
-  ],
-  "success": true,
-  "total_questions": 1
-}
-
-C:\Users\6700>curl -X GET http://127.0.0.1:5000/categories/3/questions
-{
-  "current_category": "Geography",
-  "questions": [],
-  "success": true,
-  "total_questions": 0
-}
-
-C:\Users\6700>curl -X GET http://127.0.0.1:5000/categories/2/questions
-{
   "current_category": "Art",
   "questions": [
     {
