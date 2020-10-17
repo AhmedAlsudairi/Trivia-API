@@ -14,6 +14,83 @@ That's where you come in! Help them finish the trivia app so they can start hold
 
 Completing this trivia app will give you the ability to structure plan, implement, and test an API - skills essential for enabling your future applications to communicate with others. 
 
+## API Documention
+
+# Introduction
+
+This API serve trivia react app which allow the user to browse through avaliable questions, search for question, filter questions by category, post new question, and play quiz for specific category.
+
+# Getting started
+
+This API is hosted in localhost http://127.0.0.1:5000/ .
+
+# Error
+
+1. Code: 422, Message: Unprocessable Entity,
+Response: {
+      "success" : False,
+      "status_code" : 422,
+      "message" : "Unprocessable Entity"
+    }
+2. Code: 404, Message: Not Found,
+Response: {
+      "success" : False,
+      "status_code" : 404,
+      "message" : "Not Found"
+    }
+3. Code: 400, Message: Bad Request,
+Response: {
+      "success" : False,
+      "status_code" : 400,
+      "message" : "Bad Request"
+    }  
+    
+# Resourse endpoints    
+
+1. Method: GET, URI: '/categories'  
+Description: This endpoint to handle GET requests for all available categories.
+Parameters: None
+Response: {
+          "success" : ,
+          "categories" : 
+        }
+
+2. Method: GET, URI: '/questions' 
+Description: This endpoint to handle GET requests for questions, including pagination (every 10 questions). 
+Parameters: None
+Response: {
+        "success" : ,
+        "questions" : ,
+        "total_questions": ,
+        "categories": ,
+        "current_category":         
+      }
+
+3. Method: DELETE, URI: '/questions/<int:question_id>'  
+Description: This endpoint to DELETE question using a question ID. 
+Parameters: question_id
+Response: 
+
+4. Method: POST, URI: '/questions'  
+Description: This endpoint to POST a new question.
+Parameters: question, answer, difficulty, category
+Response: 
+
+5. Method: POST, URI: '/questions/search'  
+Description: This endpoint to get questions based on a search term.
+Parameters: searchTerm
+Response: 
+
+6. Method: GET, URI: '/categories/<int:category_id>/questions'  
+Description: This endpoint to get questions based on category.
+Parameters: category_id
+Response: 
+
+7. Method: POST, URI: '/quizzes'  
+Description: This endpoint to get questions to play the quiz.
+Parameters: previous_questions, quiz_category
+Response: 
+
 ## Tasks
 
 There are `TODO` comments throughout project. Start by reading the READMEs in:
