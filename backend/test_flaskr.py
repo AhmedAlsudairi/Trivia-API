@@ -14,7 +14,7 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia"
+        self.database_name = "trivia_test"
         self.database_path = "postgres://{}:{}@{}/{}".format('postgres', 'admin', 'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
@@ -82,16 +82,16 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['message'],"Not Found")
 
     def test_post_question(self):
-        response = self.client().post('/questions', json={'question': ' Which England footballer was famously never given a yellow card?', 'answer' : 'Gary Lineker', 'difficulty' : 3, 'category' : 'sport'})
+        response = self.client().post('/questions', json={'question': ' Which England footballer was famously never given a yellow card?', 'answer' : 'Gary Lineker', 'difficulty' : 3, 'category' : 1})
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code,200)
         self.assertEqual(data['success'],True)
-        self.assertTrue(data['category'])
+        self.assertTrue(data['created'])
         self.assertTrue(data['total_questions'])
 
     def test_400_if_post_question_bad_request(self):
-        response = self.client().post('/questions/20', json={'question': ' Which England footballer was famously never given a yellow card?', 'answer' : 'Gary Lineker', 'difficulty' : 3, 'category' : 'sport'})
+        response = self.client().post('/questions', json={'q': ' Which England footballer was famously never given a yellow card?', 'a' : 'Gary Lineker', 'd' : 3, 'c' : 1})
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code,400)
@@ -127,13 +127,38 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertEqual(data['current_category'],category.type)
 
-    def test_404_sent_requesting_beyond_valid_pages(self):
+    def test_404_sent_requesting_beyond_valid_categories(self):
         response = self.client().get('/categories/1000/questions')
         data = json.loads(response.data)
 
         self.assertEqual(response.status_code,404)
         self.assertEqual(data['success'],False)
         self.assertTrue(data['message'],"Not Found")     
+
+    def test_get_question_quizzes(self):
+        category = Category.query.get(4)
+        questions = Question.query.filter_by(category=category.id).all()
+
+        previous_questions = [question.id for question in questions]
+
+        response = self.client().post('/quizzes', json={"quiz_category": category.format(), "previous_questions": previous_questions})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['success'], True)
+
+    def test_400_get_question_quizzes_bad_request(self):
+        category = Category.query.get(4)
+        questions = Question.query.filter_by(category=category.id).all()
+
+        previous_questions = [question.id for question in questions]
+
+        response = self.client().post('/quizzes', json={"category": category.format(), "questions": previous_questions})
+        data = json.loads(response.data)
+
+        self.assertEqual(response.status_code,400)
+        self.assertEqual(data['success'],False)
+        self.assertTrue(data['message'],"Bad Request")      
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
