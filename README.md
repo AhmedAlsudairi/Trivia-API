@@ -166,34 +166,11 @@ Response: ```{
 4. Method: POST, URI: '/questions'  
 Description: This endpoint to POST a new question.
 Parameters: question, answer, difficulty, category
-Request: ```curl -X POST http://127.0.0.1:5000/questions/search -d '{"searchTerm":"what"}'```
+Request: ```curl -X POST http://127.0.0.1:5000/questions -d '{"question":"Which queen had the shortest reign of Henry VIII’s six wives?","answer":"Anne of Cleves","difficulty":4,"category":4}'```
 Response: ```{
-    "current_category": null,
-    "questions": [
-        {
-            "answer": "Mona Lisa",
-            "category": 2,
-            "difficulty": 3,
-            "id": 17,
-            "question": "La Giaconda is better known as what?"
-        },
-        {
-            "answer": "The Liver",
-            "category": 1,
-            "difficulty": 4,
-            "id": 20,
-            "question": "What is the heaviest organ in the human body?"
-        },
-        {
-            "answer": "Blood",
-            "category": 1,
-            "difficulty": 4,
-            "id": 22,
-            "question": "Hematology is a branch of medicine involving the study of what?"
-        }
-    ],
+    "created": 34,
     "success": true,
-    "total_questions": 3
+    "total_questions": 18
 }```
 
 5. Method: POST, URI: '/questions/search'  
@@ -289,11 +266,17 @@ C:\Users\6700>curl -X GET http://127.0.0.1:5000/categories/2/questions
 7. Method: POST, URI: '/quizzes'  
 Description: This endpoint to get questions to play the quiz.
 Parameters: previous_questions, quiz_category
-Request: ```curl -X POST http://127.0.0.1:5000/quizzes -d '{"previous_questions":"[]", "quiz_category" : "{id: 1}" }'```
+Request: ```curl -X POST http://127.0.0.1:5000/quizzes -d '{"quiz_category":{"type":"Art","id":2},"previous_questions":[20]}'```
 Response: ```{
-          "success" : True,
-          "question": question
-        }```
+    "question": {
+        "answer": "Jackson Pollock",
+        "category": 2,
+        "difficulty": 2,
+        "id": 19,
+        "question": "Which American artist was a pioneer of Abstract Expressionism, and a leading exponent of action painting?"
+    },
+    "success": true
+}```
 
 ## Tasks
 
